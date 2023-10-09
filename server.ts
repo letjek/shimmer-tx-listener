@@ -86,9 +86,11 @@ async function run() {
     nodes: [process.env.NODE_URL],
   })
 
+  const tag = Buffer.from('mosquitopay:test1.local').toString('hex')
+  console.log(tag)
   // Array of topics to subscribe to
   // Topics can be found here https://studio.asyncapi.com/?url=https://raw.githubusercontent.com/iotaledger/tips/main/tips/TIP-0028/event-api.yml
-  const topics = ['blocks/transaction/tagged-data']
+  const topics = [`blocks/transaction/tagged-data/0x${tag}`]
 
   const callback = async function (error: Error, data: string) {
     if (error != null) {
@@ -107,7 +109,7 @@ async function run() {
       console.log(
         'New milestone index' + index + ', previous ID: ' + previousMilestone
       )
-    } else if (parsed.topic == 'blocks/transaction/tagged-data') {
+    } else if (parsed.topic == `blocks/transaction/tagged-data/0x${tag}`) {
       const payload = plainToInstance(Transaction, JSON.parse(parsed.payload))
       if (payload.payload.essence instanceof RegularTransactionEssence) {
         console.log(
